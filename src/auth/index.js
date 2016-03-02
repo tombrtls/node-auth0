@@ -310,8 +310,8 @@ AuthenticationClient.prototype.verifySMSCode = function (data, cb) {
 
 
 /**
- * Exchange the token of the logged in user with a token that is valid to call
- * the API (signed with the API secret).
+ * Exchange the id token or use the refresh token of the logged in user to get a new token that is
+ * valid to call the API (signed with the API secret)
  *
  * @method    getDelegationToken
  * @memberOf  module:auth.AuthenticationClient.prototype
@@ -331,6 +331,15 @@ AuthenticationClient.prototype.verifySMSCode = function (data, cb) {
  *   grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer'
  * };
  *
+ * or
+ *
+ * var data = {
+ *   refresh_token: '{REFRESH_TOKEN}',
+ *   api_type: 'app',
+ *   target: '{TARGET}',
+ *   grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer'
+ * };
+ *
  * auth0.getDelegationToken(data, function (err, token) {
  *   if (err) {
  *     // Handle error.
@@ -339,17 +348,19 @@ AuthenticationClient.prototype.verifySMSCode = function (data, cb) {
  *   console.log(token);
  * });
  *
- * @param   {Object}  data              Token data object.
- * @param   {String}  data.id_token     The user ID token.
- * @param   {String}  data.api_type     The API type (aws, firebase, etc).
- * @param   {String}  data.target       The target client ID.
- * @param   {String}  data.grant_type   The grant type.
+ * @param   {Object}  data                Token data object.
+ * @param   {String}  data.id_token       The user ID token. // Either id_token or refresh_token is required
+ * @param   {String}  data.refresh_token  The users refresh token.  // Either id_token or refresh_token is required
+ * @param   {String}  data.api_type       The API type (aws, firebase, etc).
+ * @param   {String}  data.target         The target client ID.
+ * @param   {String}  data.grant_type     The grant type.
  *
  * @return  {Promise|undefined}
  */
 AuthenticationClient.prototype.getDelegationToken = function (data, cb) {
   var translatedData = {
     id_token: data.id_token,
+    refresh_token: data.refresh_token,
     api_type: data.api || data.api_type,
     scope: data.scope,
     target: data.targetClientId || data.target

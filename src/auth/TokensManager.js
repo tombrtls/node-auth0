@@ -88,14 +88,14 @@ TokensManager.prototype.getInfo = function (idToken, cb) {
 
 
 /**
- * Exchange the token of the logged in user with a token that is valid to call
+ * Exchange the token or refresh token of the logged in user with a token that is valid to call
  * the API (signed with the API secret).
  *
  * @method
  * @memberOf module:auth.TokensManager.prototype
  *
  * @example <caption>
- *   Given an existing token, this endpoint will generate a new token signed
+ *   Given an existing id token or refresh token, this endpoint will generate a new token signed
  *   with the target client secret. This is used to flow the identity of the
  *   user from the application to an API or across different APIs that are
  *   protected with different secrets. Find more information in the
@@ -109,6 +109,15 @@ TokensManager.prototype.getInfo = function (idToken, cb) {
  *   grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer'
  * };
  *
+ * or
+ *
+ * var data = {
+ *   refresh_token: '{REFRESH_TOKEN}',
+ *   api_type: 'app',
+ *   target: '{TARGET}',
+ *   grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer'
+ * };
+ *
  * auth0.tokens.getDelegationToken(data, function (err, token) {
  *   if (err) {
  *     // Handle error.
@@ -117,12 +126,13 @@ TokensManager.prototype.getInfo = function (idToken, cb) {
  *   console.log(token);
  * });
  *
- * @param   {Object}    data              Token data object.
- * @param   {String}    data.id_token     User ID token.
- * @param   {String}    data.target       Target client ID.
- * @param   {String}    data.api_type     The API to be used (aws, auth0, etc).
- * @param   {String}    data.grant_type   Grant type (password, jwt, etc).
- * @param   {Function}  [cb]              Callback function.
+ * @param   {Object}    data                Token data object.
+ * @param   {String}    data.id_token       User ID token. // Either id_token or refresh_token is required
+ * @param   {String}    data.refresh_token  Refresh token. // Either id_token or refresh_token is required
+ * @param   {String}    data.target         Target client ID.
+ * @param   {String}    data.api_type       The API to be used (aws, auth0, etc).
+ * @param   {String}    data.grant_type     Grant type (password, jwt, etc).
+ * @param   {Function}  [cb]                Callback function.
  *
  * @return  {Promise|undefined}
  */
@@ -134,13 +144,16 @@ TokensManager.prototype.getDelegationToken = function (data, cb) {
     throw new ArgumentError('Missing token data object');
   }
 
-  if (typeof data.id_token !== 'string'
-      || data.id_token.trim().length === 0) {
-    throw new ArgumentError('id_token field is required');
+  var hasIdToken = typeof data.id_token === 'string' && data.id_token.trim().length !== 0;
+
+  var hasRefreshToken = typeof data.refresh_token === 'string' && data.refresh_token.trim().length !== 0;
+
+  if (hasIdToken === false && hasRefreshToken === false) {
+    throw new ArgumentError('id_token field or refresh_token field is required');
   }
 
   if (typeof data.target !== 'string'
-      || data.target.trim().length === 0) {
+    || data.target.trim().length === 0) {
     throw new ArgumentError('target field is required');
   }
 
