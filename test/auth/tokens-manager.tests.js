@@ -191,15 +191,6 @@ describe('TokensManager', function () {
     });
 
 
-    it('should require a target client', function () {
-      var data = { id_token: 'TEST_ID_TOKEN' };
-      var getDelegationToken = manager.getDelegationToken.bind(manager, data);
-
-      expect(getDelegationToken)
-        .to.throw(ArgumentError, 'target field is required');
-    });
-
-
     it('should require an API type', function () {
       var data = {
         id_token: 'TEST_ID_TOKEN',

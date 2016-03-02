@@ -105,7 +105,7 @@ TokensManager.prototype.getInfo = function (idToken, cb) {
  * var data = {
  *   id_token: '{ID_TOKEN}',
  *   api_type: 'app',
- *   target: '{TARGET}',
+ *   target: '{TARGET}',  // Optional field
  *   grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer'
  * };
  *
@@ -114,7 +114,7 @@ TokensManager.prototype.getInfo = function (idToken, cb) {
  * var data = {
  *   refresh_token: '{REFRESH_TOKEN}',
  *   api_type: 'app',
- *   target: '{TARGET}',
+ *   target: '{TARGET}',  // Optional field
  *   grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer'
  * };
  *
@@ -129,7 +129,7 @@ TokensManager.prototype.getInfo = function (idToken, cb) {
  * @param   {Object}    data                Token data object.
  * @param   {String}    data.id_token       User ID token. // Either id_token or refresh_token is required
  * @param   {String}    data.refresh_token  Refresh token. // Either id_token or refresh_token is required
- * @param   {String}    data.target         Target client ID.
+ * @param   {String}    data.target         Target client ID. // Optional field
  * @param   {String}    data.api_type       The API to be used (aws, auth0, etc).
  * @param   {String}    data.grant_type     Grant type (password, jwt, etc).
  * @param   {Function}  [cb]                Callback function.
@@ -150,11 +150,6 @@ TokensManager.prototype.getDelegationToken = function (data, cb) {
 
   if (hasIdToken === false && hasRefreshToken === false) {
     throw new ArgumentError('id_token field or refresh_token field is required');
-  }
-
-  if (typeof data.target !== 'string'
-    || data.target.trim().length === 0) {
-    throw new ArgumentError('target field is required');
   }
 
   if (typeof data.api_type !== 'string'

@@ -327,7 +327,7 @@ AuthenticationClient.prototype.verifySMSCode = function (data, cb) {
  * var data = {
  *   id_token: '{ID_TOKEN}',
  *   api_type: 'app',
- *   target: '{TARGET}',
+ *   target: '{TARGET}',  // Optional field
  *   grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer'
  * };
  *
@@ -336,7 +336,7 @@ AuthenticationClient.prototype.verifySMSCode = function (data, cb) {
  * var data = {
  *   refresh_token: '{REFRESH_TOKEN}',
  *   api_type: 'app',
- *   target: '{TARGET}',
+ *   target: '{TARGET}',  // Optional field
  *   grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer'
  * };
  *
@@ -352,7 +352,7 @@ AuthenticationClient.prototype.verifySMSCode = function (data, cb) {
  * @param   {String}  data.id_token       The user ID token. // Either id_token or refresh_token is required
  * @param   {String}  data.refresh_token  The users refresh token.  // Either id_token or refresh_token is required
  * @param   {String}  data.api_type       The API type (aws, firebase, etc).
- * @param   {String}  data.target         The target client ID.
+ * @param   {String}  data.target         The target client ID. // Optional field
  * @param   {String}  data.grant_type     The grant type.
  *
  * @return  {Promise|undefined}
