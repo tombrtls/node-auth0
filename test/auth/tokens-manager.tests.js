@@ -182,21 +182,12 @@ describe('TokensManager', function () {
     });
 
 
-    it('should require an ID token' ,function () {
+    it('should require an ID token or refresh token' ,function () {
       var data = {};
       var getDelegationToken = manager.getDelegationToken.bind(manager, data);
 
       expect(getDelegationToken)
-        .to.throw(ArgumentError, 'id_token field is required');
-    });
-
-
-    it('should require a target client', function () {
-      var data = { id_token: 'TEST_ID_TOKEN' };
-      var getDelegationToken = manager.getDelegationToken.bind(manager, data);
-
-      expect(getDelegationToken)
-        .to.throw(ArgumentError, 'target field is required');
+        .to.throw(ArgumentError, 'id_token field or refresh_token field is required');
     });
 
 
@@ -223,7 +214,6 @@ describe('TokensManager', function () {
       expect(getDelegationToken)
         .to.throw(ArgumentError, 'grant_type field is required');
     });
-
 
     it('should accept a callback', function (done) {
       var data = {
@@ -272,7 +262,39 @@ describe('TokensManager', function () {
 
     });
 
-    it('should include the data in the body of the request', function (done) {
+    it('should include the data with refresh_token in the body of the request', function (done) {
+      nock.cleanAll();
+
+      var data = {
+        refresh_token: 'TEST_REFRESH_TOKEN',
+        target: 'TEST_TARGET',
+        api_type: 'aws',
+        grant_type: 'SAMPLE_GRANT_TYPE'
+      };
+
+      var request = nock(BASE_URL)
+        .post(path, function (body) {
+          for (var property in data) {
+            if (body[property] !== data[property]) {
+              return false;
+            }
+          }
+
+          return true;
+        })
+        .reply();
+
+      manager
+        .getDelegationToken(data)
+        .then(function () {
+          expect(request.isDone())
+            .to.be.true;
+
+          done();
+        });
+    });
+
+    it('should include the data with id_token in the body of the request', function (done) {
       nock.cleanAll();
 
       var data = {
